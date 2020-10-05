@@ -19,3 +19,11 @@ func FailResponse(statusCode int, message string) map[string]interface{} {
 
 	return response
 }
+
+func MessageResponse(statusCode int, messageString string) map[string]interface{}{
+	response := map[string]interface{}{
+		"Status" : statusCode,
+		"Message": messageString,
+	}
+	return response
+}

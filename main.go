@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"github.com/joho/godotenv"
 	"goshop-api/app/route"
-	_ "goshop-api/util" //initialize db
+	"goshop-api/util"
+	"os"
 )
 
 func main() {
@@ -14,6 +15,15 @@ func main() {
 		fmt.Println("failed load env file")
 		panic(err)
 	}
+
+	//initialize sql database
+	util.InitializeSqlDB(
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_PORT"),
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_NAME"),
+		os.Getenv("DB_PASSWORD"),
+		)
 
 	//serve the route link and start gin
 	route.ServeRoutes()

@@ -6,7 +6,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-//User struct
+//User struct to insert to database
 type User struct {
 	ID          primitive.ObjectID `json:"_id" bson:"_id,omitempty" `
 	Username    string             `json:"username" bson:"username,omitempty" binding:"required"`
@@ -16,6 +16,17 @@ type User struct {
 	Name        string             `json:"name" bson:"name,omitempty" binding:"required"`
 	PhoneNumber string             `json:"phone_number" bson:"phone_number,omitempty" binding:"required"`
 }
+
+//UserJSON struct used to show data with certain field
+type UserJSON struct {
+	ID          primitive.ObjectID `json:"_id" bson:"_id,omitempty" `
+	Username    string             `json:"username" bson:"username,omitempty" binding:"required"`
+	Email       string             `json:"email" bson:"email,omitempty" binding:"required"`
+	Address     string             `json:"address" bson:"address,omitempty" binding:"required"`
+	Name        string             `json:"name" bson:"name,omitempty" binding:"required"`
+	PhoneNumber string             `json:"phone_number" bson:"phone_number,omitempty" binding:"required"`
+}
+
 
 type Claim struct {
 	Email    string `json:"email"`

@@ -18,11 +18,11 @@ import (
 	"strings"
 )
 
-var userCollection = util.InitializeDatabase().Database("go-shop").Collection("users")
+var userCollection = util.InitializeMongoDB().Database("go-shop").Collection("users")
 
 // GetUsers return all users
 func GetUsers(c *gin.Context) {
-	var users []model.User
+	var users []model.UserJSON
 	cursor, err := userCollection.Find(context.TODO(), bson.M{})
 
 	if err != nil {
@@ -37,7 +37,7 @@ func GetUsers(c *gin.Context) {
 
 	defer cursor.Close(context.TODO())
 	for cursor.Next(context.TODO()) {
-		var user model.User
+		var user model.UserJSON
 		err := cursor.Decode(&user)
 		if err != nil {
 			log.Fatal(err.Error())
@@ -53,7 +53,7 @@ func GetUsers(c *gin.Context) {
 
 //GetUser return single user only
 func GetUser(c *gin.Context) {
-	var user model.User
+	var user model.UserJSON
 	userQuery := c.Param("id")
 	objectID, _ := primitive.ObjectIDFromHex(userQuery)
 	result := userCollection.FindOne(context.TODO(), bson.M{"_id": objectID})
@@ -104,7 +104,6 @@ func UpdateUser(c *gin.Context) {
 		"phone_number": user.PhoneNumber,
 		"address":      user.Address,
 	}}
-
 	//update user data
 	updateResult := userCollection.FindOneAndUpdate(context.TODO(), filter, update, &returnOpt)
 	var result bson.M
@@ -137,7 +136,7 @@ func GetProfile(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, util.FailResponse(http.StatusUnauthorized, "Invalid token"))
 		return
 	}
-	var user model.User
+	var user model.UserJSON
 	ctx, _ := context.WithTimeout(context.TODO(), 5*time.Second)
 	err := userCollection.FindOne(ctx, bson.M{"email": extractedData["email"]}).Decode(&user)
 	if err != nil {

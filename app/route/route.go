@@ -23,6 +23,30 @@ func ServeRoutes() {
 		auth.POST("/login", controller.Login)
 		auth.POST("/register", controller.Register)
 	}
+
+	stores := router.Group("/api/stores")
+	{
+		stores.GET("/", controller.GetStores)
+		stores.GET("/:id", controller.GetStore)
+		stores.POST("/", controller.AddStore)
+		stores.DELETE("/:id", controller.DeleteStore)
+		stores.PUT("/:id", controller.UpdateStore)
+	}
+
+	items := router.Group("/api/items")
+	{
+		items.POST("/", controller.AddItem)
+		items.GET("/", controller.GetItems)
+		items.GET("/:id",controller.GetItem)
+		items.DELETE("/:id",controller.DeleteItem)
+		items.PUT("/:id",controller.UpdateItem)
+	}
+
+	storeItems := router.Group("/api/item/store")
+	{
+		storeItems.GET("/",controller.GetStoreItems)
+	}
+
 	//run gin
 	_ = router.Run()
 }
