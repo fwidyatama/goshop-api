@@ -143,7 +143,6 @@ func GetProfile(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, util.FailResponse(http.StatusBadRequest, "User not found"))
 		return
 	}
-
 	c.JSON(http.StatusOK, util.SuccessResponse(http.StatusOK, "Success", user))
 
 }

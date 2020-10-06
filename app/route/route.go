@@ -31,20 +31,23 @@ func ServeRoutes() {
 		stores.POST("/", controller.AddStore)
 		stores.DELETE("/:id", controller.DeleteStore)
 		stores.PUT("/:id", controller.UpdateStore)
+		stores.POST("/additem", controller.AddStoreItem)
 	}
 
 	items := router.Group("/api/items")
 	{
 		items.POST("/", controller.AddItem)
 		items.GET("/", controller.GetItems)
-		items.GET("/:id",controller.GetItem)
-		items.DELETE("/:id",controller.DeleteItem)
-		items.PUT("/:id",controller.UpdateItem)
+		items.GET("/:id", controller.GetItem)
+		items.DELETE("/:id", controller.DeleteItem)
+		items.PUT("/:id", controller.UpdateItem)
 	}
 
-	storeItems := router.Group("/api/item/store")
+	orders := router.Group("/api/order")
 	{
-		storeItems.GET("/",controller.GetStoreItems)
+		orders.Use(middleware.Auth)
+		orders.POST("/", controller.AddOrder)
+		orders.GET("/", controller.GetOrders)
 	}
 
 	//run gin

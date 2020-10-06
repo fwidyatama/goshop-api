@@ -60,7 +60,6 @@ func Login(c *gin.Context) {
 			"Wrong password, please try again"))
 		return
 	}
-
 	//jwt section
 	var jwtKey = []byte(os.Getenv("JWT_SECRET"))
 	expirationTime := time.Now().Add(5 * time.Minute)
