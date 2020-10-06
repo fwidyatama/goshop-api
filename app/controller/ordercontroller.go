@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 	"goshop-api/app/model"
 	"goshop-api/util"
-	log "log"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -41,6 +41,13 @@ func AddOrder(c *gin.Context) {
 		StoreId  int
 		Quantity int
 	}
+
+	type FailResult struct {
+		Message []string
+	}
+
+	var failResult FailResult
+
 	var inputOrder []InputOrder
 	var order model.Order
 	c.ShouldBindJSON(&inputOrder)
@@ -59,21 +66,28 @@ func AddOrder(c *gin.Context) {
 				StoreId:   IdStore,
 				Quantity:  value.Quantity,
 			})
-		}
 
-		//change quantity after purchasing
-		if value.Quantity > 0 {
-			util.DB.Model(&model.StoreItem{}).Where("store_id = ? And item_id = ?", value.StoreId, value.ItemId).UpdateColumn("quantity", gorm.Expr("quantity - ?", value.Quantity))
+			if itemQuantity <= 0 {
+				failResult.Message = append(failResult.Message, itemName+" Quantity is less then 0")
+			} else {
+				util.DB.Model(&model.StoreItem{}).Where("store_id = ? And item_id = ?", value.StoreId, value.ItemId).UpdateColumn("quantity", gorm.Expr("quantity - ?", value.Quantity))
+			}
 		}
 	}
-	//get detail user and insert into database
-	detailUser := GetDetailUser(c)
-	model.NewOrder()
-	UserId, _ := primitive.ObjectIDFromHex(detailUser)
-	order.OrderDate = time.Now()
-	order.UserID = UserId
-	result, _ := orderCollection.InsertOne(context.TODO(), &order)
-	c.JSON(http.StatusOK, util.SuccessResponse(http.StatusOK, "Success order", result))
+
+	if failResult.Message != nil {
+		c.JSON(http.StatusBadRequest, failResult)
+		return
+	} else {
+		//get detail user and insert into database
+		detailUser := GetDetailUser(c)
+		model.NewOrder()
+		UserId, _ := primitive.ObjectIDFromHex(detailUser)
+		order.OrderDate = time.Now()
+		order.UserID = UserId
+		result, _ := orderCollection.InsertOne(context.TODO(), &order)
+		c.JSON(http.StatusOK, util.SuccessResponse(http.StatusOK, "Success order", result))
+	}
 }
 
 func GetOrders(c *gin.Context) {
